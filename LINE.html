@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FTWS Line</title>
+  <link rel="stylesheet" href="app/css/style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <div class="brand-mark" aria-hidden="true"><span>L</span></div>
+        <div>
+          <h1>FTWS Line</h1>
+          <p class="subtitle">3.5mm ↔ 3.5mm</p>
+        </div>
+      </div>
+      <span class="badge">GMSK · Android</span>
+    </header>
+
+    <section class="card">
+      <h2 data-eyebrow="00">先這樣測</h2>
+      <ol class="steps">
+        <li>電腦耳機孔 → 3.5mm 線 → 手機耳機孔。電腦當傳送，手機當接收。</li>
+        <li>電腦開這個頁面，選「電腦傳送」，按「探測音」。</li>
+        <li>手機先關掉這個頁面，用系統錄音 App 聽。聽得到「哔」才代表線通。</li>
+        <li>手機再開這個頁面，選「手機接收」。先看音訊輸入，使用「自動（Android 路由優先）」再按「開始接收」。</li>
+        <li>電腦按「傳 Demo」。手機的「輸入電平」應先有反應，再等待 GMSK 解碼。</li>
+      </ol>
+    </section>
+
+    <section class="card" id="roleCard">
+      <h2 data-eyebrow="01">這台要做什麼</h2>
+      <div id="quietStatus" class="status idle">先選角色。探測音不必等解碼器。</div>
+      <div class="actions">
+        <button id="btnRoleTx" class="btn primary">電腦傳送</button>
+        <button id="btnRoleRx" class="btn">手機接收</button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="txCard">
+      <h2 data-eyebrow="02">傳送</h2>
+      <p class="hint">系統播放裝置設成 3.5mm 耳機孔。這版使用 Android 相容 GMSK；若手機輸入電平顯示過載，請降低電腦音量。</p>
+      <div class="actions">
+        <button id="btnProbe" class="btn">探測音</button>
+        <button id="btnSendDemo" class="btn primary">傳 Demo</button>
+        <button id="btnStopSend" class="btn danger" disabled>停止</button>
+      </div>
+      <label class="field"><span>檔案</span><input id="fileInput" type="file"></label>
+      <div class="actions">
+        <button id="btnPrepare" class="btn" disabled>準備</button>
+        <button id="btnSend" class="btn primary" disabled>傳送</button>
+      </div>
+      <pre id="sendInfo" class="mono panel">尚未準備</pre>
+      <div class="progress"><div id="sendBar"></div></div>
+      <div id="sendText" class="progressText">待命</div>
+      <label class="field"><span>補傳缺失 chunk（0-based，例如 0,3-5,9）</span><input id="resendList" type="text" placeholder="把手機的缺失清單貼到這裡"></label>
+      <button id="btnResendMissing" class="btn wide" disabled>只補傳缺失</button>
+    </section>
+
+    <section class="card hidden" id="rxCard">
+      <h2 data-eyebrow="02">接收</h2>
+      <p class="hint">Android 預設使用「路由優先」模式，避免 Chrome 抓回內建麥克風。開始接收後不要再開系統錄音。</p>
+      <div class="settings rx-settings">
+        <label class="field"><span>音訊輸入</span><select id="audioInputSelect"><option value="">系統預設輸入</option></select></label>
+        <label class="field"><span>收音模式</span><select id="captureMode"><option value="auto">自動（Android 路由優先）</option><option value="raw">原始音訊（關閉 AEC/NS/AGC）</option><option value="route-safe">Android 路由相容（AEC 開啟）</option></select></label>
+        <div class="field"><span>裝置</span><button id="btnRefreshInputs" class="btn">重新掃描輸入</button></div>
+      </div>
+      <pre id="audioRouteInfo" class="mono panel">尚未開啟輸入</pre>
+      <div class="progress input-meter"><div id="inputBar"></div></div>
+      <div id="inputText" class="progressText">等待訊號</div>
+      <div class="actions">
+        <button id="btnReceive" class="btn primary">開始接收</button>
+        <button id="btnStopReceive" class="btn danger" disabled>停止</button>
+        <button id="btnClearReceive" class="btn">清空</button>
+      </div>
+      <pre id="receiverInfo" class="mono panel">尚未收到</pre>
+      <div class="progress"><div id="recvBar"></div></div>
+      <div id="recvText" class="progressText">等待</div>
+      <label class="field"><span>缺失</span><textarea id="missingList" rows="2" readonly></textarea></label>
+      <button id="btnCopyMissing" class="btn wide">複製缺失</button>
+      <div id="downloadBox" class="downloadBox"></div>
+    </section>
+
+    <section class="card">
+      <h2 data-eyebrow="03">日誌</h2>
+      <div id="log" class="log"></div>
+    </section>
+  </main>
+
+  <textarea id="demoText" hidden>Hello Line</textarea>
+
+  <script src="app/vendor/quiet/line-profiles.js"></script>
+  <script src="app/vendor/quiet/quiet-ftws.js"></script>
+  <script src="app/js/line-app.js"></script>
+</body>
+</html>
